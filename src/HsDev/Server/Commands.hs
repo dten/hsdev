@@ -163,7 +163,7 @@ runServerCommand (Run sopts) = runServer sopts $ do
 		bracket (liftIO $ makeSocket (serverPort sopts)) (liftIO . close) $ \s -> do
 			liftIO $ do
 				setSocketOption s ReuseAddr 1
-				addr' <- inet_addr "127.0.0.1"
+				addr' <- inet_addr "0.0.0.0"
 				bind s (sockAddr (serverPort sopts) addr')
 				listen s maxListenQueue
 			forever $ logAsync (Log.sendLog Log.Fatal . fromString) $ logIO "exception: " (Log.sendLog Log.Error . fromString) $ do
@@ -204,7 +204,7 @@ runServerCommand (Stop copts) = runServerCommand (Remote copts False Exit)
 runServerCommand (Connect copts) = do
 	curDir <- getCurrentDirectory
 	s <- makeSocket $ clientPort copts
-	addr' <- inet_addr "127.0.0.1"
+	addr' <- inet_addr "0.0.0.0"
 	Net.connect s $ sockAddr (clientPort copts) addr'
 	bracket (socketToHandle s ReadWriteMode) hClose $ \h -> forM_ [(1 :: Integer)..] $ \i -> ignoreIO $ do
 		input' <- hGetLineBS stdin
