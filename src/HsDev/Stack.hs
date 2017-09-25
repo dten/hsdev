@@ -14,6 +14,7 @@ module HsDev.Stack (
 	) where
 
 import Control.Arrow
+import Control.Applicative
 import Control.Lens (makeLenses, Lens', at, ix, lens, (^?), (^.))
 import Control.Monad
 import Control.Monad.Trans.Maybe
@@ -28,6 +29,7 @@ import qualified Distribution.Text as T (display)
 import System.Directory
 import System.Environment
 import System.FilePath
+import System.IO.Unsafe (unsafePerformIO)
 import System.Log.Simple (MonadLog(..))
 
 import qualified Packages as GHC
@@ -68,8 +70,13 @@ stack cmd' = hsdevLiftIO $ do
 
 -- | Make yaml opts
 yaml :: Maybe FilePath -> [String]
-yaml Nothing = []
-yaml (Just y) = ["--stack-yaml", y]
+yaml maybeF = case maybeF <|> yamlEnv of
+	Just f -> ["--stack-yaml", f]
+	Nothing -> []
+
+yamlEnv :: Maybe String
+{-# NOINLINE yamlEnv #-}
+yamlEnv = unsafePerformIO $ lookupEnv "STACK_YAML"
 
 type Paths = Map String FilePath
 
