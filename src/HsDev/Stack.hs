@@ -95,13 +95,14 @@ buildDeps = build ["--only-dependencies"]
 configure :: MonadLog m => Maybe FilePath -> m ()
 configure = build ["--only-configure"]
 
-data StackEnv = StackEnv {
-	_stackRoot :: FilePath,
-	_stackProject :: FilePath,
-	_stackConfig :: FilePath,
-	_stackGhc :: FilePath,
-	_stackSnapshot :: FilePath,
-	_stackLocal :: FilePath }
+data StackEnv = StackEnv
+	{ _stackRoot :: FilePath
+	, _stackProject :: FilePath
+	, _stackConfig :: FilePath
+	, _stackGhc :: FilePath
+	, _stackSnapshot :: FilePath
+	, _stackLocal :: FilePath
+	} deriving (Show)
 
 makeLenses ''StackEnv
 
